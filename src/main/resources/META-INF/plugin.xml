@@ -1,0 +1,24 @@
+<idea-plugin>
+    <id>om.sossy.cpachecker.plugin.CpacheckerPlugin</id>
+    <name>Cpachecker</name>
+    <vendor email="supportttt@yourcompany.com" url="http://www.yourcompanytttt.com">YourttttCompany</vendor>
+
+    <description>
+        description descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription
+    </description>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <configurationType implementation="execution.CpacheckerRunConfigurationType"/>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>
