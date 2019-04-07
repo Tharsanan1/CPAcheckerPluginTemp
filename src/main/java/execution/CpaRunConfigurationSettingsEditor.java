@@ -20,13 +20,99 @@ public class CpaRunConfigurationSettingsEditor extends SettingsEditor<Cpachecker
     private JLabel cpuCoreLimitation;
     private JLabel executionType;
     private JLabel graphicOutput;
+    String[] revisionString = { "trunk:HEAD", "....", "....", "...." };
+    JComboBox revisionCombo = new JComboBox(revisionString);
+    String[] configString = { "default", "default--overflow", "valueAnalysis-proofcheck-multiedges-defaultprop", "...." };
+    JComboBox configCombo = new JComboBox(configString);
+    String[] specString = { "Plain text", "CPAchecker", "file", "sv-repo" };
+    JComboBox specCombo = new JComboBox(specString);
+    JTextArea specTextArea = new JTextArea();
+    JRadioButton on = new JRadioButton("ON");
+    JRadioButton off = new JRadioButton("OFF");
+    String[] logLevelString = { "All", "Finest", "Finer", "Fine", "Info", "Warning", "Severe", "Off"};
+    JComboBox logLevelCombo = new JComboBox(logLevelString);
+    String[] machineModelString = { "Linux 32", "Linux 64", "...."};
+    JComboBox machineModelCombo = new JComboBox(machineModelString);
+    JTextField timeLimitationField = new JTextField();
+    JTextField memoryLimitationField = new JTextField();
+    JTextField coreLimitationField = new JTextField();
+    JRadioButton cloud = new JRadioButton("Cloud");
+    JRadioButton local = new JRadioButton("Local");
+    //JFileChooser cpaDirChooser = new JFileChooser();
+    JButton chooseFile = new JButton("Browse CPA");
+    JRadioButton on2 = new JRadioButton("ON");
+    JRadioButton off2 = new JRadioButton("OFF");
+
+    ButtonGroup onOffButtonGroup = new ButtonGroup();
+    ButtonGroup onOffButtonGroup2 = new ButtonGroup();
+    ButtonGroup cloudLocalButtonGroup = new ButtonGroup();
+
+
     @Override
     protected void resetEditorFrom(CpacheckerRunConfiguration config) {
+        timeLimitationField.setText(config.getTimeLimitationFieldText());
+        revisionCombo.setSelectedItem(config.getRevisionString());
+        configCombo.setSelectedItem(config.getConfigString());
+        specCombo.setSelectedItem(config.getSpecComboString());
+        specTextArea.setText(config.getSpecAreaText());
+        if(config.isOn()){
+            on.setSelected(true);
+        }
+        else{
+            on.setSelected(false);
+        }
+        if(config.isOn2()){
+            on2.setSelected(true);
+        }
+        else{
+            on2.setSelected(false);
+        }
+        if(config.isCloud()){
+            cloud.setSelected(true);
+        }
+        else{
+            cloud.setSelected(false);
+        }
+
+        logLevelCombo.setSelectedItem(config.getLogLevelString());
+        machineModelCombo.setSelectedItem(config.getMachineModelString());
+        memoryLimitationField.setText(config.getMemoryLimitationString());
+        coreLimitationField.setText(config.getCoreLimitationString());
 
     }
 
     @Override
     protected void applyEditorTo(CpacheckerRunConfiguration config) throws ConfigurationException {
+        try {
+            config.setTimeLimitationFieldText(timeLimitationField.getText());
+            config.setRevisionString(revisionCombo.getSelectedItem().toString());
+            config.setConfigString(configCombo.getSelectedItem().toString());
+            config.setSpecComboString(specCombo.getSelectedItem().toString());
+            config.setSpecAreaText(specTextArea.getText());
+            if (onOffButtonGroup.getSelection().getActionCommand().equals("on")) {
+                config.setOn(true);
+            } else {
+                config.setOn(false);
+            }
+            if (onOffButtonGroup2.getSelection().getActionCommand().equals("on")) {
+                config.setOn2(true);
+            } else {
+                config.setOn2(false);
+            }
+            if (cloudLocalButtonGroup.getSelection().getActionCommand().equals("cloud")) {
+                config.setCloud(true);
+            } else {
+                config.setCloud(false);
+            }
+            config.setLogLevelString(logLevelCombo.getSelectedItem().toString());
+            config.setMachineModelString(machineModelCombo.getSelectedItem().toString());
+            config.setMemoryLimitationString(memoryLimitationField.getText());
+            config.setCoreLimitationString(coreLimitationField.getText());
+        }
+        catch(Exception e){
+            System.out.println("error: " + e.getMessage());
+        }
+
 
     }
 
@@ -48,28 +134,22 @@ public class CpaRunConfigurationSettingsEditor extends SettingsEditor<Cpachecker
         cpuCoreLimitation = new JLabel("CPU Core Limitation");
         executionType = new JLabel("Execution Type");
         graphicOutput = new JLabel("Graphic Output");
-        String[] revisionString = { "trunk:HEAD", "....", "....", "...." };
-        JComboBox revisionCombo = new JComboBox(revisionString);
-        String[] configString = { "default", "default--overflow", "valueAnalysis-proofcheck-multiedges-defaultprop", "...." };
-        JComboBox configCombo = new JComboBox(configString);
-        String[] specString = { "Plain text", "CPAchecker", "file", "sv-repo" };
-        JComboBox specCombo = new JComboBox(specString);
-        JTextArea specTextArea = new JTextArea();
-        JRadioButton on = new JRadioButton("ON");
-        JRadioButton off = new JRadioButton("OFF");
-        String[] logLevelString = { "All", "Finest", "Finer", "Fine", "Info", "Warning", "Severe", "Off"};
-        JComboBox logLevelCombo = new JComboBox(logLevelString);
-        String[] machineModelString = { "Linux 32", "Linux 64", "...."};
-        JComboBox machineModelCombo = new JComboBox(machineModelString);
-        JTextField timeLimitationField = new JTextField();
-        JTextField memoryLimitationField = new JTextField();
-        JTextField coreLimitationField = new JTextField();
-        JRadioButton cloud = new JRadioButton("Cloud");
-        JRadioButton local = new JRadioButton("Local");
-        //JFileChooser cpaDirChooser = new JFileChooser();
-        JButton chooseFile = new JButton("Browse CPA");
-        JRadioButton on2 = new JRadioButton("ON");
-        JRadioButton off2 = new JRadioButton("OFF");
+
+        on.setActionCommand("on");
+        off.setActionCommand("off");
+        on2.setActionCommand("on");
+        off2.setActionCommand("off");
+        cloud.setActionCommand("cloud");
+        local.setActionCommand("local");
+
+        onOffButtonGroup.add(on);
+        onOffButtonGroup.add(off);
+        onOffButtonGroup2.add(on2);
+        onOffButtonGroup2.add(off2);
+        cloudLocalButtonGroup.add(cloud);
+        cloudLocalButtonGroup.add(local);
+
+
         c.weightx = 1.0;
         c.anchor = GridBagConstraints.LINE_START;
         c.gridx = 0;
