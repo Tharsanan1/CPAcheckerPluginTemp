@@ -5,15 +5,24 @@ import com.intellij.execution.Executor;
 import com.intellij.execution.application.ApplicationConfiguration;
 import com.intellij.execution.application.ApplicationConfigurationType;
 import com.intellij.execution.configuration.ConfigurationFactoryEx;
+import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationBase;
 import com.intellij.execution.configurations.RunProfileState;
+import com.intellij.execution.filters.TextConsoleBuilder;
+import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.runners.ExecutionEnvironment;
+import com.intellij.execution.ui.ConsoleView;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.JDOMExternalizer;
 import com.intellij.openapi.util.WriteExternalException;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowAnchor;
+import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.ui.content.Content;
+import com.intellij.ui.content.ContentFactory;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -175,7 +184,8 @@ public class CpacheckerRunConfiguration extends RunConfigurationBase {// impleme
     @Nullable
     @Override
     public RunProfileState getState(@NotNull Executor executor, @NotNull final ExecutionEnvironment env) throws ExecutionException {
-        return null;
+        createWindowAndRunProcess(env.getProject());
+            return null;
     }
 
     public void setTimeLimitationFieldText(String timeLimitationFieldText) {
@@ -184,5 +194,47 @@ public class CpacheckerRunConfiguration extends RunConfigurationBase {// impleme
 
     public String getTimeLimitationFieldText() {
         return timeLimitationFieldText;
+    }
+
+    private GeneralCommandLine getCommandLine() {
+        GeneralCommandLine commandLine = new GeneralCommandLine();
+//        commandLine.setExePath();
+//        commandLine.setWorkDirectory();
+//        commandLine.addParameter();
+//        commandLine.addParameter();
+
+        return commandLine;
+    }
+
+    private void createWindowAndRunProcess(Project project) {
+        try {
+            GeneralCommandLine command = getCommandLine();
+            //Process p = command.createProcess();
+
+            if (true) {
+                ToolWindowManager manager = ToolWindowManager.getInstance(project);
+                String id = "Gherkin Runner";
+                TextConsoleBuilderFactory factory = TextConsoleBuilderFactory.getInstance();
+                TextConsoleBuilder builder = factory.createBuilder(project);
+                ConsoleView view = builder.getConsole();
+
+                //ColoredProcessHandler handler = new ColoredProcessHandler(p, command.getPreparedCommandLine());
+                //handler.startNotify();
+                //view.attachToProcess(handler);
+
+                ToolWindow window = manager.getToolWindow(id);
+
+                if (window == null) {
+                    window = manager.registerToolWindow(id, true, ToolWindowAnchor.BOTTOM);
+                }
+
+                ContentFactory cf = window.getContentManager().getFactory();
+                Content c = cf.createContent(view.getComponent(), "Run " + (window.getContentManager().getContentCount() + 1), true);
+
+                window.getContentManager().addContent(c);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
