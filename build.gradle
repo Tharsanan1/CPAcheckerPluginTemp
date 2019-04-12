@@ -17,7 +17,9 @@ dependencies {
 }
 
 intellij {
-    version '2018.3.5'
+    //version '2018.3.5'
+    version 'LATEST-EAP-SNAPSHOT'
+    type 'CL'
 }
 patchPluginXml {
     changeNotes """

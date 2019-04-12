@@ -44,6 +44,7 @@ public class CpacheckerRunConfiguration extends RunConfigurationBase {// impleme
     private String cpaDir;
     private boolean isCloud;
     private boolean isOn2;
+    private static CpacheckerRunConfiguration cpacheckerRunConfiguration;
 
     @Override
     public void readExternal(Element element) throws InvalidDataException {
@@ -173,6 +174,7 @@ public class CpacheckerRunConfiguration extends RunConfigurationBase {// impleme
     public CpacheckerRunConfiguration(String name, Project project, ConfigurationFactoryEx configurationFactory) {
         super(project, configurationFactory, name);
         this.programParameters = new ApplicationConfiguration(name, project, ApplicationConfigurationType.getInstance());
+        cpacheckerRunConfiguration = this;
     }
 
     @NotNull
@@ -187,7 +189,7 @@ public class CpacheckerRunConfiguration extends RunConfigurationBase {// impleme
     public RunProfileState getState(@NotNull Executor executor, @NotNull final ExecutionEnvironment env) throws ExecutionException {
         System.out.println(System.getProperty("os.name"));
         if(System.getProperty("os.name").toLowerCase().equals("linux")) {
-            CmdLinuxExecution cmdLinuxExecution = new CmdLinuxExecution(this, env.getProject());
+            CmdLinuxExecution cmdLinuxExecution = new CmdLinuxExecution(this, env.getProject(), true);
             cmdLinuxExecution.process();
         }
         return null;
@@ -207,5 +209,9 @@ public class CpacheckerRunConfiguration extends RunConfigurationBase {// impleme
 
     public void setCpaDir(String cpaDir) {
         this.cpaDir = cpaDir;
+    }
+
+    public static CpacheckerRunConfiguration getCpacheckerRunConfiguration() {
+        return cpacheckerRunConfiguration;
     }
 }

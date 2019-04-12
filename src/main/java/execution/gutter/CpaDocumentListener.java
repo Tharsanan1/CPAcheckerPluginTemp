@@ -49,7 +49,7 @@ public class CpaDocumentListener  implements DocumentListener {
                 }
                 Icon icon = AllIcons.RunConfigurations.TestState.Run;
 
-                CpaIconRenderer cpaIconRenderer = new CpaIconRenderer(editor.getProject(), fileName);
+                CpaIconRenderer cpaIconRenderer = new CpaIconRenderer(editor.getProject(), fileName, documentEvent.getDocument());
                 cpaIconRenderer.setLine(i);
                 cpaIconRenderer.setIcon(icon);
 
@@ -76,8 +76,6 @@ public class CpaDocumentListener  implements DocumentListener {
                 lineStartOffset, lineEndOffset, 3333, attributes, HighlighterTargetArea.LINES_IN_RANGE
         );
     }
-
-
 
     private boolean isFunctionLine(String line){
         Boolean bool = line.matches("[a-zA-Z]+ [a-zA-Z]+[0-9]*[ ]*[(](.* .*(,.* .*)*)?[)]( *)[{](.*)");

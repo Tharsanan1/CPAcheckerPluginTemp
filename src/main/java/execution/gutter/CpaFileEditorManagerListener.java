@@ -79,7 +79,7 @@ public class CpaFileEditorManagerListener  implements FileEditorManagerListener 
                     }
                     Icon icon = AllIcons.RunConfigurations.TestState.Run;
 
-                    CpaIconRenderer cpaIconRenderer = new CpaIconRenderer(rootEditor.getProject(), pathNewFile);
+                    CpaIconRenderer cpaIconRenderer = new CpaIconRenderer(rootEditor.getProject(), pathNewFile, rootDocument);
                     cpaIconRenderer.setLine(i);
                     cpaIconRenderer.setIcon(icon);
 
@@ -108,10 +108,8 @@ public class CpaFileEditorManagerListener  implements FileEditorManagerListener 
         );
     }
 
-
-
     private boolean isFunctionLine(String line){
-        Boolean bool = line.matches(".* .*[(](.* .*(,.* .*)*)?[)]( *)[{](.*)");
+        Boolean bool = line.matches("[a-zA-Z]+ [a-zA-Z]+[0-9]*[ ]*[(](.* .*(,.* .*)*)?[)]( *)[{](.*)");
         return bool;
     }
 }
