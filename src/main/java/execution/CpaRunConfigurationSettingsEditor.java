@@ -3,9 +3,10 @@ package execution;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import org.jetbrains.annotations.NotNull;
-
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class CpaRunConfigurationSettingsEditor extends SettingsEditor<CpacheckerRunConfiguration> {
     private JPanel configWindow;
@@ -38,10 +39,11 @@ public class CpaRunConfigurationSettingsEditor extends SettingsEditor<Cpachecker
     JTextField coreLimitationField = new JTextField();
     JRadioButton cloud = new JRadioButton("Cloud");
     JRadioButton local = new JRadioButton("Local");
-    //JFileChooser cpaDirChooser = new JFileChooser();
+    JFileChooser cpaDirChooser;
     JButton chooseFile = new JButton("Browse CPA");
     JRadioButton on2 = new JRadioButton("ON");
     JRadioButton off2 = new JRadioButton("OFF");
+    String cpaDir = "/";
 
     ButtonGroup onOffButtonGroup = new ButtonGroup();
     ButtonGroup onOffButtonGroup2 = new ButtonGroup();
@@ -78,6 +80,7 @@ public class CpaRunConfigurationSettingsEditor extends SettingsEditor<Cpachecker
         machineModelCombo.setSelectedItem(config.getMachineModelString());
         memoryLimitationField.setText(config.getMemoryLimitationString());
         coreLimitationField.setText(config.getCoreLimitationString());
+        cpaDir = config.getCpaDir();
 
     }
 
@@ -89,25 +92,29 @@ public class CpaRunConfigurationSettingsEditor extends SettingsEditor<Cpachecker
             config.setConfigString(configCombo.getSelectedItem().toString());
             config.setSpecComboString(specCombo.getSelectedItem().toString());
             config.setSpecAreaText(specTextArea.getText());
-            if (onOffButtonGroup.getSelection().getActionCommand().equals("on")) {
+            if (onOffButtonGroup.getSelection() != null && onOffButtonGroup.getSelection().getActionCommand().equals("on")) {
                 config.setOn(true);
             } else {
+                off.setSelected(true);
                 config.setOn(false);
             }
-            if (onOffButtonGroup2.getSelection().getActionCommand().equals("on")) {
+            if (onOffButtonGroup2.getSelection() != null && onOffButtonGroup2.getSelection().getActionCommand().equals("on")) {
                 config.setOn2(true);
             } else {
+                off2.setSelected(true);
                 config.setOn2(false);
             }
-            if (cloudLocalButtonGroup.getSelection().getActionCommand().equals("cloud")) {
+            if (cloudLocalButtonGroup.getSelection() != null && cloudLocalButtonGroup.getSelection().getActionCommand().equals("cloud")) {
                 config.setCloud(true);
             } else {
+                local.setSelected(true);
                 config.setCloud(false);
             }
             config.setLogLevelString(logLevelCombo.getSelectedItem().toString());
             config.setMachineModelString(machineModelCombo.getSelectedItem().toString());
             config.setMemoryLimitationString(memoryLimitationField.getText());
             config.setCoreLimitationString(coreLimitationField.getText());
+            config.setCpaDir(cpaDir);
         }
         catch(Exception e){
             System.out.println("error: " + e.getMessage());
@@ -148,6 +155,39 @@ public class CpaRunConfigurationSettingsEditor extends SettingsEditor<Cpachecker
         onOffButtonGroup2.add(off2);
         cloudLocalButtonGroup.add(cloud);
         cloudLocalButtonGroup.add(local);
+
+        chooseFile.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cpaDirChooser = new JFileChooser();
+                System.out.println(System.getProperty("os.name"));
+                if(cpaDir != null) {
+                    cpaDirChooser.setCurrentDirectory(new java.io.File(cpaDir));
+                }
+                else {
+                    if(System.getProperty("os.name").toLowerCase().equals("linux")) {
+                        cpaDirChooser.setCurrentDirectory(new java.io.File("/home"));
+                    }
+                    else{
+                        cpaDirChooser.setCurrentDirectory(new java.io.File("C:/")); //need to implement later
+                    }
+                }
+                cpaDirChooser.setDialogTitle("Choose CPA folder");
+                cpaDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                //
+                // disable the "All files" option.
+                //
+                cpaDirChooser.setAcceptAllFileFilterUsed(false);
+                //
+                if (cpaDirChooser.showOpenDialog(configWindow) == JFileChooser.APPROVE_OPTION) {
+                    cpaDir = cpaDirChooser.getSelectedFile().toString();
+
+                }
+                else {
+                    System.out.println("No Selection ");
+                }
+            }
+        });
 
 
         c.weightx = 1.0;

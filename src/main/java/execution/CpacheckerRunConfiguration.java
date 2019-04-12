@@ -23,6 +23,7 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
+import execution.linux_cmd.CmdLinuxExecution;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,6 +41,7 @@ public class CpacheckerRunConfiguration extends RunConfigurationBase {// impleme
     private String machineModelString;
     private String memoryLimitationString;
     private String coreLimitationString;
+    private String cpaDir;
     private boolean isCloud;
     private boolean isOn2;
 
@@ -58,6 +60,7 @@ public class CpacheckerRunConfiguration extends RunConfigurationBase {// impleme
         coreLimitationString = JDOMExternalizer.readString(element, "coreLimitationString");
         isCloud = JDOMExternalizer.readBoolean(element, "isCloud");
         isOn2 = JDOMExternalizer.readBoolean(element, "isOn2");
+        cpaDir =  JDOMExternalizer.readString(element, "cpaDir");
 
     }
 
@@ -76,6 +79,7 @@ public class CpacheckerRunConfiguration extends RunConfigurationBase {// impleme
         JDOMExternalizer.write(element, "coreLimitationString", coreLimitationString);
         JDOMExternalizer.write(element, "isCloud", isCloud);
         JDOMExternalizer.write(element, "isOn2", isOn2);
+        JDOMExternalizer.write(element, "cpaDir", cpaDir);
     }
 
     public String getRevisionString() {
@@ -134,7 +138,6 @@ public class CpacheckerRunConfiguration extends RunConfigurationBase {// impleme
         this.machineModelString = machineModelString;
     }
 
-
     public String getMemoryLimitationString() {
         return memoryLimitationString;
     }
@@ -167,8 +170,6 @@ public class CpacheckerRunConfiguration extends RunConfigurationBase {// impleme
         isOn2 = on2;
     }
 
-
-
     public CpacheckerRunConfiguration(String name, Project project, ConfigurationFactoryEx configurationFactory) {
         super(project, configurationFactory, name);
         this.programParameters = new ApplicationConfiguration(name, project, ApplicationConfigurationType.getInstance());
@@ -184,8 +185,12 @@ public class CpacheckerRunConfiguration extends RunConfigurationBase {// impleme
     @Nullable
     @Override
     public RunProfileState getState(@NotNull Executor executor, @NotNull final ExecutionEnvironment env) throws ExecutionException {
-        createWindowAndRunProcess(env.getProject());
-            return null;
+        System.out.println(System.getProperty("os.name"));
+        if(System.getProperty("os.name").toLowerCase().equals("linux")) {
+            CmdLinuxExecution cmdLinuxExecution = new CmdLinuxExecution(this, env.getProject());
+            cmdLinuxExecution.process();
+        }
+        return null;
     }
 
     public void setTimeLimitationFieldText(String timeLimitationFieldText) {
@@ -196,45 +201,11 @@ public class CpacheckerRunConfiguration extends RunConfigurationBase {// impleme
         return timeLimitationFieldText;
     }
 
-    private GeneralCommandLine getCommandLine() {
-        GeneralCommandLine commandLine = new GeneralCommandLine();
-//        commandLine.setExePath();
-//        commandLine.setWorkDirectory();
-//        commandLine.addParameter();
-//        commandLine.addParameter();
-
-        return commandLine;
+    public String getCpaDir() {
+        return cpaDir;
     }
 
-    private void createWindowAndRunProcess(Project project) {
-        try {
-            GeneralCommandLine command = getCommandLine();
-            //Process p = command.createProcess();
-
-            if (true) {
-                ToolWindowManager manager = ToolWindowManager.getInstance(project);
-                String id = "Gherkin Runner";
-                TextConsoleBuilderFactory factory = TextConsoleBuilderFactory.getInstance();
-                TextConsoleBuilder builder = factory.createBuilder(project);
-                ConsoleView view = builder.getConsole();
-
-                //ColoredProcessHandler handler = new ColoredProcessHandler(p, command.getPreparedCommandLine());
-                //handler.startNotify();
-                //view.attachToProcess(handler);
-
-                ToolWindow window = manager.getToolWindow(id);
-
-                if (window == null) {
-                    window = manager.registerToolWindow(id, true, ToolWindowAnchor.BOTTOM);
-                }
-
-                ContentFactory cf = window.getContentManager().getFactory();
-                Content c = cf.createContent(view.getComponent(), "Run " + (window.getContentManager().getContentCount() + 1), true);
-
-                window.getContentManager().addContent(c);
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+    public void setCpaDir(String cpaDir) {
+        this.cpaDir = cpaDir;
     }
 }
