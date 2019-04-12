@@ -18,6 +18,12 @@
         <configurationType implementation="execution.CpacheckerRunConfigurationType"/>
     </extensions>
 
+    <application-components>
+        <component>
+            <implementation-class>execution.gutter.GutterComponent</implementation-class>
+        </component>
+    </application-components>
+
     <actions>
         <!-- Add your actions here -->
     </actions>

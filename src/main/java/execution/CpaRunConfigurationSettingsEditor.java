@@ -32,7 +32,7 @@ public class CpaRunConfigurationSettingsEditor extends SettingsEditor<Cpachecker
     JRadioButton off = new JRadioButton("OFF");
     String[] logLevelString = { "All", "Finest", "Finer", "Fine", "Info", "Warning", "Severe", "Off"};
     JComboBox logLevelCombo = new JComboBox(logLevelString);
-    String[] machineModelString = { "Linux 32", "Linux 64", "...."};
+    String[] machineModelString = { "Linux32", "Linux64", "...."};
     JComboBox machineModelCombo = new JComboBox(machineModelString);
     JTextField timeLimitationField = new JTextField();
     JTextField memoryLimitationField = new JTextField();

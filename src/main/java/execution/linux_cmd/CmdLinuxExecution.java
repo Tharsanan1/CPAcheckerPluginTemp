@@ -53,7 +53,12 @@ public class CmdLinuxExecution {
 
     private String prepareCommand(){
         String commandString = "";
-        
+        String whiteSpace = " ";
+        String logLevelProp = "-setprop log.consoleLevel=" + cpacheckerRunConfiguration.getLogLevelString();
+        String machineModelProp = "-setprop analysis.machineModel=" + cpacheckerRunConfiguration.getMachineModelString();
+        String configurationProp = "-" + cpacheckerRunConfiguration.getConfigString();
+        String cpa = cpacheckerRunConfiguration.getCpaDir() + "/" + "scripts/cpa.sh";
+        commandString += cpa + whiteSpace + logLevelProp + whiteSpace + machineModelProp + whiteSpace + configurationProp + whiteSpace + filePath;
         return commandString;
     }
 
